@@ -22,6 +22,8 @@ public class IndexServlet extends HttpServlet {
 		
 		//zet alle landen in attribute
 		request.setAttribute("landen", landService.findAll());
+		
+		
 		//-->
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
