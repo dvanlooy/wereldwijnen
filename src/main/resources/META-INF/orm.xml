@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+	<named-query name="Land.findAll">
+		<query>
+			select l from Land l order by l.naam asc
+		</query>
+	</named-query>
+	<named-query name="Soort.findPerLand">
+		<query>
+			select s from Soort s where s.land = :land order by s.naam asc
+		</query>
+	</named-query>
+	<named-query name="Wijn.findPerSoort">
+		<query>
+			select w from Wijn w where w.soort = :soort order by w.jaar asc
+		</query>
+	</named-query>
+
+
+
+</entity-mappings>
+
+
