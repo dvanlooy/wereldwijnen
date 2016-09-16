@@ -9,17 +9,12 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import be.vdab.entities.Bestelbon;
 import be.vdab.entities.Wijn;
 import be.vdab.util.Invoercontrole;
 
 @Embeddable
 public class Bestelbonlijn implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "bonid")
-	private Bestelbon bestelbon;
 	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "wijnid")
@@ -31,17 +26,12 @@ public class Bestelbonlijn implements Serializable {
 	protected Bestelbonlijn() {
 	}
 
-	public Bestelbonlijn(Bestelbon bestelbon, Wijn wijn, long aantal) throws IllegalArgumentException, NullPointerException {
-		this.bestelbon = Objects.requireNonNull(bestelbon, "bestelbon is verplicht");
+	public Bestelbonlijn(Wijn wijn, long aantal) throws IllegalArgumentException, NullPointerException {
 		this.wijn = Objects.requireNonNull(wijn, "wijn is verplicht");
 		this.aantal = Invoercontrole.positiveLong(aantal, "aantal moet een positief getal zijn");
 	}
 	
 	//GETTERS
-	public Bestelbon getBestelbon() {
-		return bestelbon;
-	}
-
 	public Wijn getWijn() {
 		return wijn;
 	}
