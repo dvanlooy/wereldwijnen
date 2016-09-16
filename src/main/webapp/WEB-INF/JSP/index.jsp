@@ -7,5 +7,4 @@
 <html lang='nl'>
 <v:head title='Wereldwijnen' />
 <v:header />
-</body>
-</html>
+<v:footer />
