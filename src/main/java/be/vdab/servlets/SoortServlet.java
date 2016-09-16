@@ -9,16 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import be.vdab.entities.Land;
+import be.vdab.entities.Soort;
 import be.vdab.services.LandService;
 import be.vdab.services.SoortService;
+import be.vdab.services.WijnService;
 
 
-@WebServlet("/land.htm")
-public class LandServlet extends HttpServlet {
+@WebServlet("/soort.htm")
+public class SoortServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final String VIEW = "/WEB-INF/JSP/land.jsp";
+	private static final String VIEW = "/WEB-INF/JSP/soort.jsp";
 	private final transient LandService landService = new LandService();
 	private final transient SoortService soortService = new SoortService();
+	private final transient WijnService wijnService = new WijnService();
        
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -26,21 +29,26 @@ public class LandServlet extends HttpServlet {
 		//zet alle landen in attribute
 		request.setAttribute("landen", landService.findAll());
 		
-		//zoek landid in parameter
+		//zoek soortid in parameter
 		if (request.getParameter("id") != null) {
 			try {
-				long landId = Long.parseLong(request.getParameter("id"));
-				//lees Land uit DB
-				Land land = landService.read(landId);
+				long soortId = Long.parseLong(request.getParameter("id"));
+				//lees Soort en Land uit DB
+				Soort soort = soortService.read(soortId);
+				Land land = soort.getLand();
+				request.setAttribute("soort", soort);
 				request.setAttribute("land", land);
-				//lees Soorten per Land uit DB
+				// lees Wijnen per Soort uit DB
+				request.setAttribute("wijnen", wijnService.findPerSoort(soort));
+				//lees alle Soorten huidig Land uit DB
 				request.setAttribute("soorten", soortService.findPerLand(land));
+				
 			}
 			catch (NumberFormatException ex) {
-				request.setAttribute("fout", "Land id is niet juist");
+				request.setAttribute("fout", "soort id is niet juist");
 			}
 		}else {
-			request.setAttribute("fout", "geen land geselecteerd");
+			request.setAttribute("fout", "geen soort geselecteerd");
 		}
 		
 		//-->
