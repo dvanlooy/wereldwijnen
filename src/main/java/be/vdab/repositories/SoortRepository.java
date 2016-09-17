@@ -12,7 +12,7 @@ public class SoortRepository extends AbstractRepository {
 	}
 	
 	public List<Soort> findPerLand(Land land) {
-		return getEntityManager().createNamedQuery("Soorten.findPerLand", Soort.class)
+		return getEntityManager().createNamedQuery("Soort.findPerLand", Soort.class)
 				.setParameter("land", land)
 				.getResultList();
 	}

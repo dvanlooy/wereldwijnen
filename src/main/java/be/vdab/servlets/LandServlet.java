@@ -17,19 +17,18 @@ import be.vdab.services.SoortService;
 public class LandServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String VIEW = "/WEB-INF/JSP/land.jsp";
+	
 	private final transient LandService landService = new LandService();
 	private final transient SoortService soortService = new SoortService();
        
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		//zet alle landen in attribute
-		request.setAttribute("landen", landService.findAll());
-		
 		//zoek landid in parameter
-		if (request.getParameter("id") != null) {
+		String parameter = request.getParameter("id");
+		if (parameter != null) {
 			try {
-				long landId = Long.parseLong(request.getParameter("id"));
+				long landId = Long.parseLong(parameter);
 				//lees Land uit DB
 				Land land = landService.read(landId);
 				request.setAttribute("land", land);
@@ -42,7 +41,8 @@ public class LandServlet extends HttpServlet {
 		}else {
 			request.setAttribute("fout", "geen land geselecteerd");
 		}
-		
+		//zet alle landen in attribute
+				request.setAttribute("landen", landService.findAll());
 		//-->
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}

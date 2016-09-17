@@ -1,12 +1,14 @@
 package be.vdab.servlets;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import be.vdab.services.LandService;
 
@@ -19,7 +21,11 @@ public class IndexServlet extends HttpServlet {
        
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		// lees mandje uit session
+		HttpSession session = request.getSession();
+		@SuppressWarnings("unchecked")
+		Map<Long, Long> mandje = (Map<Long, Long>) session.getAttribute("mandje");
+		request.setAttribute("mandje", mandje);
 		//zet alle landen in attribute
 		request.setAttribute("landen", landService.findAll());
 		//-->

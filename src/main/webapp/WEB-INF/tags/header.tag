@@ -5,20 +5,24 @@
 <body>
 	<section class='jumbotron'>
 		<div class="container">
-			<nav class="navbar navbar-default navbar-fixed-top">
-			<div class="container text-center">
-				<h1>Wereldwijnen</h1>
-				<ul class="list-inline">
-					<c:forEach items="${landen}" var="land">
-						<c:url value="/land.htm" var="landurl">
-							<c:param name="id" value="${land.id}" />
-						</c:url>
-						<li><a href="${landurl}"><img alt="${land.naam}" src="<c:url value="/images/${land.id}.png" />"></a></li>
-					</c:forEach>
+			<nav class="navbar navbar-default">
+				<div class="container text-center">
+					<h1>Wereldwijnen</h1>
+
+					<ul class="list-inline">
+						<c:forEach items="${landen}" var="land">
+							<c:url value="/land.htm" var="landurl">
+								<c:param name="id" value="${land.id}" />
+							</c:url>
+							<li><a href="${landurl}"><img alt="${land.naam}"
+									src="<c:url value="/images/${land.id}.png" />"></a></li>
+						</c:forEach>
+					</ul>
 					<c:if test="${not empty mandje}">
-						<li><a href="<c:url value="/mandje.htm" />"><img
-								alt="mandje" src="<c:url value="/images/mandje.png" />"></a></li>
+						<h2>
+							<a href="<c:url value="/mandje.htm" />"><span
+								class="glyphicon glyphicon-shopping-cart"></span> </a>
+						</h2>
 					</c:if>
-				</ul>
 				</div>
 			</nav>

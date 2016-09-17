@@ -12,7 +12,7 @@ public class WijnRepository extends AbstractRepository {
 	}
 	
 	public List<Wijn> findPerSoort(Soort soort) {
-		return getEntityManager().createNamedQuery("Wijnen.findBySoort", Wijn.class)
+		return getEntityManager().createNamedQuery("Wijn.findPerSoort", Wijn.class)
 				.setParameter("soort", soort)
 				.getResultList();
 	}

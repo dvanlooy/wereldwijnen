@@ -65,6 +65,14 @@ public class Wijn implements Serializable{
 	public byte getBeoordeling() {
 		return beoordeling;
 	}
+	
+	public String getSterretjes(){
+		StringBuilder sterretjes = new StringBuilder();
+		for (byte teller = 0; teller < beoordeling; teller ++){
+			sterretjes.append("&#9733;");
+		}
+		return sterretjes.toString();
+	}
 
 	
 	//OVERRIDES
