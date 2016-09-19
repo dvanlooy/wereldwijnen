@@ -12,7 +12,7 @@
 	<c:param name="id" value="${wijn.soort.id}" />
 </c:url>
 <a href="${soorturl}" class="btn btn-default" role="button">Terug
-	naar overzicht</a>
+	naar overzicht ${wijn.soort.naam} uit ${wijn.soort.land.naam}</a>
 <div class="container">
 	<p style="width:300px">
 		<dl class="row">
