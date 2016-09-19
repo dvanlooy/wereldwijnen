@@ -7,7 +7,7 @@
 <html lang='nl'>
 <v:head title='Wereldwijnen' />
 <v:header />
-
-	<div class="alert alert-info" role="alert"><strong>Welkom bij wereldwijnen.</strong> Begin met het kiezen van een land door op de bijhorende vlag te klikken.</div>
-
+<c:if test="${not empty param}">
+	<div class="alert alert-success" role="alert">Je mandje is bevestigd als bestelbon ${param.id}</div>
+</c:if>
 <v:footer />

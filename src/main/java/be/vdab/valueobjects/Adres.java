@@ -20,12 +20,15 @@ public class Adres implements Serializable {
 
 	}
 
-	public Adres(String straat, String huisNr, String postCode, String gemeente) throws IllegalArgumentException {
-		this.straat = Invoercontrole.noEmptyOrNullString(straat, "straat kan niet leeg of null zijn");
-		this.huisNr = Invoercontrole.noEmptyOrNullString(huisNr, "huisnummer kan niet leeg of null zijn");
-		this.postCode = Invoercontrole.noEmptyOrNullString(postCode, "postcode kan niet leeg of null zijn");
-		this.gemeente = Invoercontrole.noEmptyOrNullString(gemeente, "gemeente kan niet leeg of null zijn");
+	public Adres(String straat, String huisNr, String postCode, String gemeente) {
+		super();
+		this.straat = straat;
+		this.huisNr = huisNr;
+		this.postCode = postCode;
+		this.gemeente = gemeente;
 	}
+
+
 
 	// GETTERS
 	public String getStraat() {

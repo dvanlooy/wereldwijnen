@@ -1,8 +1,9 @@
 package be.vdab.util;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
+
+import be.vdab.enums.Bestelwijze;
 
 public final class Invoercontrole{
 
@@ -53,5 +54,43 @@ public final class Invoercontrole{
 		}
 		return param;
 	}
+	 /**
+	  * checks if given String matches Belgian postal code
+	  * @param param
+	  * @return String
+	  * @throws IllegalArgumentException
+	  */
+	public final static String correctPostcodeBE(String param) throws IllegalArgumentException {
+		try{
+			Integer postcode = Integer.parseInt(param);
+			if (postcode < 1000 || postcode > 9992){
+				//throw new om in Map fouten te zetten
+				throw new IllegalArgumentException("Belgische postcodes bestaan uitsluitend uit getallen van vier cijfers, van 1000 tot en met 9992.");
+			}
+		} catch (NumberFormatException ex){
+			//throw new om in Map fouten te zetten
+			throw new IllegalArgumentException("Belgische postcodes bestaan uitsluitend uit getallen.");
+		}
+		return param;
+	}
+	/**
+	 *  checks if given String matches Bestelwijze enum
+	 * @param param
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public final static String correctBestelwijze(String param) throws IllegalArgumentException {
+		try{
+			Bestelwijze.valueOf(param);
+			return param;
+		} catch (IllegalArgumentException | NullPointerException ex) {
+			//throw verder om in Map fouten te zetten
+			   throw new IllegalArgumentException ("Bestelwijze niet correct");
+		}
+		
+		
+	}
+	
+	
 
 }

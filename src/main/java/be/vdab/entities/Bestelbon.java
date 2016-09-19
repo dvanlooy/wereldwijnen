@@ -45,14 +45,15 @@ public class Bestelbon implements Serializable{
 	protected Bestelbon() {
 	}
 
-	public Bestelbon(String naam, Adres adres, Bestelwijze bestelwijze,
-			Set<Bestelbonlijn> bestelbonlijnen) throws IllegalArgumentException, NullPointerException {
+	public Bestelbon(String naam, Adres adres, Bestelwijze bestelwijze, Set<Bestelbonlijn> bestelbonlijnen) {
 		this.besteld = LocalDateTime.now();
-		this.naam = Invoercontrole.noEmptyOrNullString(naam, "naam is verplicht");;
-		this.adres = Objects.requireNonNull(adres, "adres is verplicht");
-		this.bestelwijze = Objects.requireNonNull(bestelwijze, "bestelwijze is verplicht");
-		this.bestelbonlijnen = Objects.requireNonNull(bestelbonlijnen, "bestelbonlijnen is verplicht");
+		this.naam = naam;
+		this.adres = adres;
+		this.bestelwijze = bestelwijze;
+		this.bestelbonlijnen = bestelbonlijnen;
 	}
+
+
 
 	//GETTERS
 	public long getId() {
