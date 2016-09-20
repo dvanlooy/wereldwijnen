@@ -32,7 +32,7 @@ public class Soort implements Serializable{
 	protected Soort() {
 	}
 
-	public Soort(String naam, Land land) throws IllegalArgumentException, NullPointerException {
+	public Soort(String naam, Land land){
 		this.naam = naam;
 		this.land = land;
 	}

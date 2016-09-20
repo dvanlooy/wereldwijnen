@@ -40,21 +40,37 @@ public class MandjeServlet extends HttpServlet {
 		// lees mandje uit session
 		Map<Long, Long> mandje = getMandjeFromSession(request);
 
-		// maak set bestelbonlijnen aan
-		Set<Bestelbonlijn> bestelbonlijnen = createBestelbonlijnen(mandje);
-		if (bestelbonlijnen != null) {
-			// bereken totaal
-			BigDecimal totaal = BigDecimal.ZERO;
-			for (Bestelbonlijn bestelbonlijn : bestelbonlijnen) {
-				totaal = totaal.add(bestelbonlijn.getTotaleWaarde());
-			}
-
-			request.setAttribute("bestelbonlijnen", bestelbonlijnen);
-			request.setAttribute("bestelwijzen", Bestelwijze.values());
-			request.setAttribute("totaal", totaal);
+		////////////////////////OPTIONAL/////////////////////////////////////////
+		// lees fouten van inputformulier uit session en zet deze in request/////
+		// attribute (fouten enkel eerste keer tonen)////////////////////////////
+		/////////////////////////////////////////////////////////////////////////
+		HttpSession session = request.getSession();
+		@SuppressWarnings("unchecked")
+		Map<Long, Long> fouten = (Map<Long, Long>) session.getAttribute("fouten");
+		if (fouten != null) {
+			request.getSession().removeAttribute("fouten");
+			request.setAttribute("fouten", fouten);
 		}
+		/////////////////////////////////////////////////////////////////////////
 
-		// zet alle landen in attribute
+		if (mandje != null) {
+			// maak set bestelbonlijnen aan
+			Set<Bestelbonlijn> bestelbonlijnen = createBestelbonlijnen(mandje);
+			if (bestelbonlijnen != null) {
+				
+				// bereken totaal
+				BigDecimal totaal = BigDecimal.ZERO;
+				for (Bestelbonlijn bestelbonlijn : bestelbonlijnen) {
+					totaal = totaal.add(bestelbonlijn.getTotaleWaarde());
+				}
+				
+				// zet alles in request attribute
+				request.setAttribute("bestelbonlijnen", bestelbonlijnen);
+				request.setAttribute("bestelwijzen", Bestelwijze.values());
+				request.setAttribute("totaal", totaal);
+			}
+		}
+		// zet alle landen in request attribute
 		request.setAttribute("landen", landService.findAll());
 
 		// -->
@@ -66,33 +82,55 @@ public class MandjeServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		// lees mandje uit session
 		Map<Long, Long> mandje = getMandjeFromSession(request);
 
-		String action = request.getParameter("action");
-		if (action.equals("remove")) {
-			// verwijder regel uit mandje
-			String param = request.getParameter("remove");
-			if (param != null) {
-				removeItemFromMandje(request, param, mandje);
-				response.sendRedirect(String.format(REDIRECT_URL_RETURN, request.getContextPath()));
+		if (mandje != null) {
+			
+			// op vuilbakje geklikt
+			String action = request.getParameter("action");
+			if (action.equals("remove")) {
+
+				// verwijder regel uit mandje
+				String param = request.getParameter("remove");
+				if (param != null) {
+					removeItemFromMandje(request, param, mandje);
+					response.sendRedirect(String.format(REDIRECT_URL_RETURN, request.getContextPath()));
+				}
 			}
-		}
-		if (action.equals("maakBestelbon")) {
-			Map<String, String> fouten = inputFouten(request);
-			if (fouten.isEmpty()) {
-				Bestelbon bestelbon = new Bestelbon(request.getParameter("naam"),
-						new Adres(request.getParameter("straat"), request.getParameter("huisnummer"),
-								request.getParameter("postcode"), request.getParameter("gemeente")),
-						Bestelwijze.valueOf(request.getParameter("bestelwijze")), createBestelbonlijnen(mandje));
-				System.out.println(bestelbon);
-				bestelbonService.create(bestelbon);
-				request.getSession().invalidate();
-				// id in parameter is eenvoudige oplossing, maar succespagina
-				// kan gemanipuleerd worden, eventueel in session steken
-				response.sendRedirect(String.format(REDIRECT_URL_SUCCESS, request.getContextPath(), bestelbon.getId()));
-			} else {
-				request.getSession().setAttribute("fouten", fouten);
-				response.sendRedirect(String.format(REDIRECT_URL_RETURN, request.getContextPath()));
+
+			// bestelbon ingevuld
+			if (action.equals("maakBestelbon")) {
+
+				// invoervelden controleren
+				Map<String, String> correcteVelden = new HashMap<>();
+				Map<String, String> fouten = inputFouten(request, correcteVelden);
+
+				// geen fouten gevonden: Go!
+				if (fouten.isEmpty()) {
+
+					// nieuwe bestelbon
+					Bestelbon bestelbon = new Bestelbon(request.getParameter("naam"),
+							new Adres(request.getParameter("straat"), request.getParameter("huisnummer"),
+									request.getParameter("postcode"), request.getParameter("gemeente")),
+							Bestelwijze.valueOf(request.getParameter("bestelwijze")), createBestelbonlijnen(mandje));
+
+					// persist bestelbon
+					bestelbonService.create(bestelbon);
+
+					// session (mandje) verwijderen
+					request.getSession().invalidate();
+
+					// id in parameter is eenvoudige oplossing,
+					// maar succespagina kan gemanipuleerd worden,
+					// eventueel in session steken
+					response.sendRedirect(
+							String.format(REDIRECT_URL_SUCCESS, request.getContextPath(), bestelbon.getId()));
+				} else {
+					request.getSession().setAttribute("fouten", fouten);
+					request.getSession().setAttribute("correcteVelden", correcteVelden);
+					response.sendRedirect(String.format(REDIRECT_URL_RETURN, request.getContextPath()));
+				}
 			}
 		}
 
@@ -119,7 +157,7 @@ public class MandjeServlet extends HttpServlet {
 		}
 		// mandje leeg: weggooien
 		if (mandje.isEmpty()) {
-			request.getSession().removeAttribute("mandje");
+			request.getSession().invalidate();
 		} else {
 			request.getSession().setAttribute("mandje", mandje);
 		}
@@ -133,31 +171,50 @@ public class MandjeServlet extends HttpServlet {
 		return mandje;
 	}
 
-	private Map<String, String> inputFouten(HttpServletRequest request) {
+	/**
+	 * controleert de invoervelden van het betselformulier en geeft een map met
+	 * fouten terug en vult de parameter map correcteVelden aan
+	 * 
+	 * @param request
+	 * @param correcteVelden
+	 * @return map met fouten
+	 */
+	private Map<String, String> inputFouten(HttpServletRequest request, Map<String, String> correcteVelden) {
 		Map<String, String> fouten = new HashMap<>();
-
 		try {
-			Invoercontrole.noEmptyOrNullString(request.getParameter("naam"), "Naam mag niet leeg zijn");
+			String naam = request.getParameter("naam");
+			Invoercontrole.noEmptyOrNullString(naam, "Naam mag niet leeg zijn");
+			correcteVelden.put("naam", naam);
 		} catch (IllegalArgumentException ex) {
 			fouten.put("naam", ex.getMessage());
 		}
+
 		try {
-			Invoercontrole.noEmptyOrNullString(request.getParameter("straat"), "Straat mag niet leeg zijn");
+			String straat = request.getParameter("straat");
+			Invoercontrole.noEmptyOrNullString(straat, "Straat mag niet leeg zijn");
+			correcteVelden.put("straat", straat);
+
 		} catch (IllegalArgumentException ex) {
 			fouten.put("straat", ex.getMessage());
 		}
 		try {
-			Invoercontrole.noEmptyOrNullString(request.getParameter("huisnummer"), "Huisnummer mag niet leeg zijn");
+			String huisnummer = request.getParameter("huisnummer");
+			Invoercontrole.noEmptyOrNullString(huisnummer, "Huisnummer mag niet leeg zijn");
+			correcteVelden.put("huisnummer", huisnummer);
 		} catch (IllegalArgumentException ex) {
 			fouten.put("huisnummer", ex.getMessage());
 		}
 		try {
-			Invoercontrole.correctPostcodeBE(request.getParameter("postcode"));
+			String postcode = request.getParameter("postcode");
+			Invoercontrole.correctPostcodeBE(postcode);
+			correcteVelden.put("postcode", postcode);
 		} catch (IllegalArgumentException ex) {
 			fouten.put("postcode", ex.getMessage());
 		}
 		try {
-			Invoercontrole.noEmptyOrNullString(request.getParameter("gemeente"), "Gemeente mag niet leeg zijn");
+			String gemeente = request.getParameter("gemeente");
+			Invoercontrole.noEmptyOrNullString(gemeente, "Gemeente mag niet leeg zijn");
+			correcteVelden.put("gemeente", gemeente);
 		} catch (IllegalArgumentException ex) {
 			fouten.put("gemeente", ex.getMessage());
 		}

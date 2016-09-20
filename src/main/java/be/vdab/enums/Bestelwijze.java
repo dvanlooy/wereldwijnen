@@ -1,7 +1,7 @@
 package be.vdab.enums;
 
 public enum Bestelwijze {
-	AFHALEN, OPSTUREN
+	AFHALEN, OPSTUREN, KAMEEL, DRONE
 	
 	
 }

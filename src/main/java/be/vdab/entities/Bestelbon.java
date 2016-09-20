@@ -2,7 +2,6 @@ package be.vdab.entities;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -17,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import be.vdab.enums.Bestelwijze;
-import be.vdab.util.Invoercontrole;
 import be.vdab.valueobjects.Adres;
 import be.vdab.valueobjects.Bestelbonlijn;
 
@@ -94,7 +92,6 @@ public class Bestelbon implements Serializable{
 		return result;
 	}
 
-	//objects zijn dezelfde wanneer besteld, naam, adres, bestelbonlijnen en bestelwijze gelijk zijn
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -14,7 +14,6 @@ import be.vdab.services.LandService;
 import be.vdab.services.SoortService;
 import be.vdab.services.WijnService;
 
-
 @WebServlet("/soort.htm")
 public class SoortServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -22,36 +21,43 @@ public class SoortServlet extends HttpServlet {
 	private final transient LandService landService = new LandService();
 	private final transient SoortService soortService = new SoortService();
 	private final transient WijnService wijnService = new WijnService();
-       
+
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		//zet alle landen in attribute
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		// zet alle landen in attribute
 		request.setAttribute("landen", landService.findAll());
-		
-		//zoek soortid in parameter
+
+		// zoek soortid in parameter
 		if (request.getParameter("id") != null) {
 			try {
-				long soortId = Long.parseLong(request.getParameter("id"));
-				//lees Soort en Land uit DB
-				Soort soort = soortService.read(soortId);
-				Land land = soort.getLand();
-				request.setAttribute("soort", soort);
-				request.setAttribute("land", land);
-				// lees Wijnen per Soort uit DB
-				request.setAttribute("wijnen", wijnService.findPerSoort(soort));
-				//lees alle Soorten huidig Land uit DB
-				request.setAttribute("soorten", soortService.findPerLand(land));
 				
+				// lees Soort en Land uit DB
+				long soortId = Long.parseLong(request.getParameter("id"));
+				Soort soort = soortService.read(soortId);
+				if (soort != null) {
+					Land land = soort.getLand();
+					request.setAttribute("soort", soort);
+					request.setAttribute("land", land);
+
+					// lees alle Soorten huidig Land uit DB
+					request.setAttribute("soorten", soortService.findPerLand(land));
+
+					// lees Wijnen per Soort uit DB
+					request.setAttribute("wijnen", wijnService.findPerSoort(soort));
+				}else{
+					request.setAttribute("fout", "Geen soort gevonden voor id " + soortId);
+				}
+
+			} catch (NumberFormatException ex) {
+				request.setAttribute("fout", "Soort id bestaat uit cijfers");
 			}
-			catch (NumberFormatException ex) {
-				request.setAttribute("fout", "soort id is niet juist");
-			}
-		}else {
-			request.setAttribute("fout", "geen soort geselecteerd");
+		} else {
+			request.setAttribute("fout", "Geen soort geselecteerd");
 		}
-		
-		//-->
+
+		// -->
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 }

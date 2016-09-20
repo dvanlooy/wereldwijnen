@@ -31,18 +31,24 @@ public class LandServlet extends HttpServlet {
 				long landId = Long.parseLong(parameter);
 				//lees Land uit DB
 				Land land = landService.read(landId);
+				if (land != null){
 				request.setAttribute("land", land);
 				//lees Soorten per Land uit DB
 				request.setAttribute("soorten", soortService.findPerLand(land));
+				}else{
+					request.setAttribute("fout", "Geen land gevonden voor id " + landId);
+				}
 			}
 			catch (NumberFormatException ex) {
-				request.setAttribute("fout", "Land id is niet juist");
+				request.setAttribute("fout", "Land id bestaat uit cijfers");
 			}
 		}else {
-			request.setAttribute("fout", "geen land geselecteerd");
+			request.setAttribute("fout", "Geen land geselecteerd");
 		}
+		
 		//zet alle landen in attribute
 				request.setAttribute("landen", landService.findAll());
+		
 		//-->
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}

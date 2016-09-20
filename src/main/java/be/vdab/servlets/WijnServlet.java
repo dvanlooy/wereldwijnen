@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import be.vdab.entities.Wijn;
 import be.vdab.services.LandService;
 import be.vdab.services.WijnService;
 
@@ -32,20 +33,29 @@ public class WijnServlet extends HttpServlet {
 		// zoek wijnid in parameter
 		if (request.getParameter("id") != null) {
 			try {
+
+				// lees wijn uit DB
 				long wijnId = Long.parseLong(request.getParameter("id"));
-				// lees Wijn uit DB
-				request.setAttribute("wijn", wijnService.read(wijnId));
-				// zoek naar bestaand mandje-item voor wijn
-				@SuppressWarnings("unchecked")
-				Map<Long, Long> mandje = (Map<Long, Long>) session.getAttribute("mandje");
-				if (mandje != null) {
-					request.setAttribute("reedsToegevoegdAantal", mandje.get(wijnId));
+				Wijn wijn = wijnService.read(wijnId);
+				if (wijn != null) {
+					request.setAttribute("wijn", wijn);
+					
+					// zoek naar bestaand mandje-item voor wijn, 
+					// aantal meegeven in request attribute
+					@SuppressWarnings("unchecked")
+					Map<Long, Long> mandje = (Map<Long, Long>) session.getAttribute("mandje");
+					if (mandje != null) {
+						request.setAttribute("reedsToegevoegdAantal", mandje.get(wijnId));
+
+					}
+				}else{
+					request.setAttribute("fout", "Geen wijn gevonden voor id " + wijnId);
 				}
 			} catch (NumberFormatException ex) {
-				request.setAttribute("fout", "wijn id is niet juist");
+				request.setAttribute("fout", "Wijn id bestaat uit cijfers");
 			}
 		} else {
-			request.setAttribute("fout", "geen wijn geselecteerd");
+			request.setAttribute("fout", "Geen wijn geselecteerd");
 		}
 
 		// -->
@@ -57,7 +67,7 @@ public class WijnServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		Map<String, String> fouten = new HashMap<>();
 		long wijnId = 0L;
-		
+
 		// lees mandje uit session
 		@SuppressWarnings("unchecked")
 		Map<Long, Long> mandje = (Map<Long, Long>) session.getAttribute("mandje");
@@ -74,7 +84,7 @@ public class WijnServlet extends HttpServlet {
 						// nieuw mandje indien niet aanwezig
 						mandje = new HashMap<>();
 					}
-					//put wijn in mandje
+					// put wijn in mandje
 					mandje.put(wijnId, aantal);
 					session.setAttribute("mandje", mandje);
 					response.sendRedirect(String.format(REDIRECT_URL, request.getContextPath()));

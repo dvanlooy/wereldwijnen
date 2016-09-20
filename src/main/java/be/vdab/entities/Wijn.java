@@ -20,6 +20,7 @@ public class Wijn implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+	
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "soortid")
 	private Soort soort;
@@ -33,7 +34,7 @@ public class Wijn implements Serializable{
 	protected Wijn() {
 	}
 
-	public Wijn(Soort soort, short jaar, byte beoordeling, BigDecimal prijs, long inBestelling) throws IllegalArgumentException, NullPointerException {
+	public Wijn(Soort soort, short jaar, byte beoordeling, BigDecimal prijs, long inBestelling){
 		this.soort = soort;
 		this.jaar = jaar;
 		this.beoordeling = beoordeling;
@@ -89,8 +90,6 @@ public class Wijn implements Serializable{
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
 		if (!(obj instanceof Wijn))
 			return false;
 		Wijn other = (Wijn) obj;

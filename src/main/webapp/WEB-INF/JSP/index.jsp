@@ -7,7 +7,5 @@
 <html lang='nl'>
 <v:head title='Wereldwijnen' />
 <v:header />
-
 	<div class="alert alert-info" role="alert"><strong>Welkom bij wereldwijnen.</strong> Begin met het kiezen van een land door op de bijhorende vlag te klikken.</div>
-
 <v:footer />

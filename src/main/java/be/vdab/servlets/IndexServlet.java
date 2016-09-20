@@ -12,23 +12,28 @@ import javax.servlet.http.HttpSession;
 
 import be.vdab.services.LandService;
 
-
 @WebServlet("/index.htm")
 public class IndexServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String VIEW = "/WEB-INF/JSP/index.jsp";
 	private final transient LandService landService = new LandService();
-       
+
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		// lees mandje uit session
 		HttpSession session = request.getSession();
 		@SuppressWarnings("unchecked")
 		Map<Long, Long> mandje = (Map<Long, Long>) session.getAttribute("mandje");
-		request.setAttribute("mandje", mandje);
-		//zet alle landen in attribute
+		if (mandje != null) {
+			request.setAttribute("mandje", "aanwezig");
+		}
+
+		// zet alle landen in attribute
 		request.setAttribute("landen", landService.findAll());
-		//-->
+
+		// -->
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 }
