@@ -58,7 +58,7 @@
 			<span class="input-group-addon" id="basic-addon1"
 				style="width: 120px">Naam</span> <input name="naam" type="text"
 				size="50" class="form-control" placeholder="Naam"
-				aria-describedby="basic-addon1"	<c:if test="${not empty correcteVelden.naam}">value="${correcteVelden.naam}"</c:if>>
+				aria-describedby="basic-addon1"	value="${param.naam}">
 		</div>
 		<c:if test="${not empty fouten.naam}">
 			<div class="alert alert-danger" role="alert"
@@ -68,7 +68,7 @@
 			<span class="input-group-addon" id="basic-addon1"
 				style="width: 120px">Straat</span> <input name="straat" type="text"
 				size="50" class="form-control" placeholder="Straat"
-				aria-describedby="basic-addon1"	<c:if test="${not empty correcteVelden.straat}">value="${correcteVelden.straat}"</c:if>>
+				aria-describedby="basic-addon1"	value="${param.straat}">
 		</div>
 		<c:if test="${not empty fouten.straat}">
 		<div class="alert alert-danger" role="alert"
@@ -78,7 +78,7 @@
 			<span class="input-group-addon" id="basic-addon1"
 				style="width: 120px">Huisnummer</span> <input name="huisnummer"
 				type="text" size="50" class="form-control" placeholder="Huisnummer"
-				aria-describedby="basic-addon1"	<c:if test="${not empty correcteVelden.huisnummer}">value="${correcteVelden.huisnummer}"</c:if>>
+				aria-describedby="basic-addon1"	value="${param.huisnummer}">
 		</div>
 		<c:if test="${not empty fouten.huisnummer}">
 		<div class="alert alert-danger" role="alert"
@@ -88,7 +88,7 @@
 			<span class="input-group-addon" id="basic-addon1"
 				style="width: 120px">Postcode</span> <input name="postcode"
 				type="number" size="4" min="1000" max ="9992" class="form-control" placeholder="Postcode"
-				aria-describedby="basic-addon1"	<c:if test="${not empty correcteVelden.postcode}">value="${correcteVelden.postcode}"</c:if>>
+				aria-describedby="basic-addon1"	value="${param.postcode}">
 		</div>
 		<c:if test="${not empty fouten.postcode}">
 		<div class="alert alert-danger" role="alert"
@@ -98,7 +98,7 @@
 			<span class="input-group-addon" id="basic-addon1"
 				style="width: 120px">Gemeente</span> <input name="gemeente"
 				type="text" size="50" class="form-control" placeholder="Gemeente"
-				aria-describedby="basic-addon1"	<c:if test="${not empty correcteVelden.gemeente}">value="${correcteVelden.gemeente}"</c:if>>
+				aria-describedby="basic-addon1"	value="${param.gemeente}">
 		</div>
 		<c:if test="${not empty fouten.gemeente}">
 		<div class="alert alert-danger" role="alert"

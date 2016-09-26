@@ -1,11 +1,8 @@
 package be.vdab.util;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import be.vdab.enums.Bestelwijze;
 
-public final class Invoercontrole{
+public final class Invoercontrole {
 
 	/**
 	 * checks if given long is positive
@@ -38,59 +35,43 @@ public final class Invoercontrole{
 	}
 
 	/**
-	 * checks if given BigDecimal is not null or negative
+	 * checks if given String matches Belgian postal code
 	 * 
 	 * @param param
-	 * @param error
-	 * @return BigDecimal
+	 * @return String
 	 * @throws IllegalArgumentException
-	 * @throws NullPointerException
 	 */
-	public final static BigDecimal positiveBigDecimal(BigDecimal param, String error)
-			throws IllegalArgumentException, NullPointerException {
-		Objects.requireNonNull(param, "parameter cannot be null");
-		if (param.signum() == -1) {
-			throw new IllegalArgumentException(error);
-		}
-		return param;
-	}
-	 /**
-	  * checks if given String matches Belgian postal code
-	  * @param param
-	  * @return String
-	  * @throws IllegalArgumentException
-	  */
 	public final static String correctPostcodeBE(String param) throws IllegalArgumentException {
-		try{
+		try {
 			Integer postcode = Integer.parseInt(param);
-			if (postcode < 1000 || postcode > 9992){
-				//throw new om in Map fouten te zetten
-				throw new IllegalArgumentException("Belgische postcodes bestaan uitsluitend uit getallen van vier cijfers, van 1000 tot en met 9992.");
+			if (postcode < 1000 || postcode > 9992) {
+				// throw new om in Map fouten te zetten
+				throw new IllegalArgumentException(
+						"Belgische postcodes bestaan uitsluitend uit getallen van vier cijfers, van 1000 tot en met 9992.");
 			}
-		} catch (NumberFormatException ex){
-			//throw new om in Map fouten te zetten
+		} catch (NumberFormatException ex) {
+			// throw new om in Map fouten te zetten
 			throw new IllegalArgumentException("Belgische postcodes bestaan uitsluitend uit getallen.");
 		}
 		return param;
 	}
+
 	/**
-	 *  checks if given String matches Bestelwijze enum
+	 * checks if given String matches Bestelwijze enum
+	 * 
 	 * @param param
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
 	public final static String correctBestelwijze(String param) throws IllegalArgumentException {
-		try{
+		try {
 			Bestelwijze.valueOf(param);
 			return param;
 		} catch (IllegalArgumentException | NullPointerException ex) {
-			//throw verder om in Map fouten te zetten
-			   throw new IllegalArgumentException ("Bestelwijze niet correct");
+			// throw new om in Map fouten te zetten
+			throw new IllegalArgumentException("Bestelwijze niet correct");
 		}
-		
-		
+
 	}
-	
-	
 
 }

@@ -40,30 +40,17 @@ public class MandjeServlet extends HttpServlet {
 		// lees mandje uit session
 		Map<Long, Long> mandje = getMandjeFromSession(request);
 
-		////////////////////////OPTIONAL/////////////////////////////////////////
-		// lees fouten van inputformulier uit session en zet deze in request/////
-		// attribute (fouten enkel eerste keer tonen)////////////////////////////
-		/////////////////////////////////////////////////////////////////////////
-		HttpSession session = request.getSession();
-		@SuppressWarnings("unchecked")
-		Map<Long, Long> fouten = (Map<Long, Long>) session.getAttribute("fouten");
-		if (fouten != null) {
-			request.getSession().removeAttribute("fouten");
-			request.setAttribute("fouten", fouten);
-		}
-		/////////////////////////////////////////////////////////////////////////
-
 		if (mandje != null) {
 			// maak set bestelbonlijnen aan
 			Set<Bestelbonlijn> bestelbonlijnen = createBestelbonlijnen(mandje);
 			if (bestelbonlijnen != null) {
-				
+
 				// bereken totaal
 				BigDecimal totaal = BigDecimal.ZERO;
 				for (Bestelbonlijn bestelbonlijn : bestelbonlijnen) {
 					totaal = totaal.add(bestelbonlijn.getTotaleWaarde());
 				}
-				
+
 				// zet alles in request attribute
 				request.setAttribute("bestelbonlijnen", bestelbonlijnen);
 				request.setAttribute("bestelwijzen", Bestelwijze.values());
@@ -86,7 +73,7 @@ public class MandjeServlet extends HttpServlet {
 		Map<Long, Long> mandje = getMandjeFromSession(request);
 
 		if (mandje != null) {
-			
+
 			// op vuilbakje geklikt
 			String action = request.getParameter("action");
 			if (action.equals("remove")) {
@@ -103,8 +90,7 @@ public class MandjeServlet extends HttpServlet {
 			if (action.equals("maakBestelbon")) {
 
 				// invoervelden controleren
-				Map<String, String> correcteVelden = new HashMap<>();
-				Map<String, String> fouten = inputFouten(request, correcteVelden);
+				Map<String, String> fouten = inputFouten(request);
 
 				// geen fouten gevonden: Go!
 				if (fouten.isEmpty()) {
@@ -115,7 +101,8 @@ public class MandjeServlet extends HttpServlet {
 									request.getParameter("postcode"), request.getParameter("gemeente")),
 							Bestelwijze.valueOf(request.getParameter("bestelwijze")), createBestelbonlijnen(mandje));
 
-					// persist bestelbon
+					// persist bestelbon & update in bestelling
+
 					bestelbonService.create(bestelbon);
 
 					// session (mandje) verwijderen
@@ -127,9 +114,9 @@ public class MandjeServlet extends HttpServlet {
 					response.sendRedirect(
 							String.format(REDIRECT_URL_SUCCESS, request.getContextPath(), bestelbon.getId()));
 				} else {
-					request.getSession().setAttribute("fouten", fouten);
-					request.getSession().setAttribute("correcteVelden", correcteVelden);
-					response.sendRedirect(String.format(REDIRECT_URL_RETURN, request.getContextPath()));
+					request.setAttribute("fouten", fouten);
+					doGet(request, response);
+
 				}
 			}
 		}
@@ -179,50 +166,45 @@ public class MandjeServlet extends HttpServlet {
 	 * @param correcteVelden
 	 * @return map met fouten
 	 */
-	private Map<String, String> inputFouten(HttpServletRequest request, Map<String, String> correcteVelden) {
-		Map<String, String> fouten = new HashMap<>();
+	private Map<String, String> inputFouten(HttpServletRequest request) {
+		Map<String, String> fouteVelden = new HashMap<>();
+
 		try {
 			String naam = request.getParameter("naam");
 			Invoercontrole.noEmptyOrNullString(naam, "Naam mag niet leeg zijn");
-			correcteVelden.put("naam", naam);
 		} catch (IllegalArgumentException ex) {
-			fouten.put("naam", ex.getMessage());
+			fouteVelden.put("naam", ex.getMessage());
 		}
 
 		try {
 			String straat = request.getParameter("straat");
 			Invoercontrole.noEmptyOrNullString(straat, "Straat mag niet leeg zijn");
-			correcteVelden.put("straat", straat);
-
 		} catch (IllegalArgumentException ex) {
-			fouten.put("straat", ex.getMessage());
+			fouteVelden.put("straat", ex.getMessage());
 		}
 		try {
 			String huisnummer = request.getParameter("huisnummer");
 			Invoercontrole.noEmptyOrNullString(huisnummer, "Huisnummer mag niet leeg zijn");
-			correcteVelden.put("huisnummer", huisnummer);
 		} catch (IllegalArgumentException ex) {
-			fouten.put("huisnummer", ex.getMessage());
+			fouteVelden.put("huisnummer", ex.getMessage());
 		}
 		try {
 			String postcode = request.getParameter("postcode");
 			Invoercontrole.correctPostcodeBE(postcode);
-			correcteVelden.put("postcode", postcode);
 		} catch (IllegalArgumentException ex) {
-			fouten.put("postcode", ex.getMessage());
+			fouteVelden.put("postcode", ex.getMessage());
 		}
 		try {
 			String gemeente = request.getParameter("gemeente");
 			Invoercontrole.noEmptyOrNullString(gemeente, "Gemeente mag niet leeg zijn");
-			correcteVelden.put("gemeente", gemeente);
 		} catch (IllegalArgumentException ex) {
-			fouten.put("gemeente", ex.getMessage());
+			fouteVelden.put("gemeente", ex.getMessage());
 		}
 		try {
 			Invoercontrole.correctBestelwijze(request.getParameter("bestelwijze"));
 		} catch (IllegalArgumentException ex) {
-			fouten.put("bestelwijze", ex.getMessage());
+			fouteVelden.put("bestelwijze", ex.getMessage());
 		}
-		return fouten;
+		return fouteVelden;
 	}
 }

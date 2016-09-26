@@ -74,6 +74,8 @@ public class Wijn implements Serializable{
 		}
 		return sterretjes.toString();
 	}
+	
+
 
 	
 	//OVERRIDES
@@ -110,6 +112,12 @@ public class Wijn implements Serializable{
 	}
 
 	
+	
+	//METHODS
+	
+	public void addInBestelling(long aantal){
+		this.inBestelling += aantal;
+	}
 
 
 
